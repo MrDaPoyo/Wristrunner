@@ -1,4 +1,4 @@
-module wr-sdk
+module wr-ui
 
 go 1.27.0
 

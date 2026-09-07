@@ -6,7 +6,7 @@ import (
 	"gioui.org/font"
 	"gioui.org/font/opentype"
 
-	"wr-sdk/assets"
+	"wr-ui/assets"
 )
 
 // loadFont parses a single font file into a face.
