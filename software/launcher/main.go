@@ -20,6 +20,13 @@ func main() {
 		th := theme.Vectorheart() // theme customizes colors, shapes, fonts, etc.
 		var ops op.Ops            // records a buffer that tells Gio what to draw and handle and applies them all at once.
 
+		w.Option(
+			app.Title("Wristrunner Launcher"),
+			app.Size(unit.Dp(450), unit.Dp(800)),    // 16:9
+			app.MinSize(unit.Dp(450), unit.Dp(800)), // 16:9
+			app.MaxSize(unit.Dp(450), unit.Dp(800)), // 16:9
+		)
+
 		for {
 			switch e := w.Event().(type) {
 			case app.DestroyEvent:

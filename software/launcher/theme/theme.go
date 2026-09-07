@@ -16,14 +16,14 @@ func Vectorheart() *material.Theme {
 	}
 
 	th.Shaper = text.NewShaper(text.WithCollection(fonts))
-	th.Face = "Oxanium"
+	th.Face = "Michroma" // available fonts: Michroma, Oxanium
 
 	// override the color palette
 	th.Palette = material.Palette{
-		Bg:         rgb(0x000000), // background
-		Fg:         rgb(0xFFFFFF), // text/foreground
-		ContrastBg: rgb(0x6750A4), // accent (buttons, etc.)
-		ContrastFg: rgb(0xFFFFFF),
+		Bg:         rgb(0x171717), // background
+		Fg:         rgb(0xdedede), // text/foreground
+		ContrastBg: rgb(0xf2572b), // accent (buttons, etc.)
+		ContrastFg: rgb(0x4d4d4d),
 	}
 
 	// default text size
