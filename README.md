@@ -8,7 +8,7 @@
 - At least 4GBs of RAM.
 
 ## Internals
-- SoC: Rockchip RK3566
+- SoC: Rockchip RK3576 https://www.lcsc.com/product-detail/C42388007.html
 - RAM: 8GBs of LPDDR4X https://www.lcsc.com/product-detail/C46681826.html
 - Cooling: Passively-cooled by the aluminum chassis/casing.
 - Display: http://aliexpress.com/item/1005008854283267.html (MIPI)
