@@ -15,11 +15,13 @@ import (
 )
 
 func main() {
+	LoadApps()
+
 	// the event loop
 	go func() {
 		w := new(app.Window)
-		th := theme.Vectorheart() // theme customizes colors, shapes, fonts, etc.
-		var ops op.Ops            // records a buffer that tells Gio what to draw and handle and applies them all at once.
+		th := uikit.VectorheartTheme() // theme customizes colors, shapes, fonts, etc.
+		var ops op.Ops                 // records a buffer that tells Gio what to draw and handle and applies them all at once.
 
 		w.Option(
 			app.Title("Wristrunner Launcher"),

@@ -1,4 +1,4 @@
-package theme
+package uikit
 
 import (
 	"io/fs"
