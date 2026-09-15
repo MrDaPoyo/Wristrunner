@@ -1,9 +1,9 @@
 package main
 
 import (
-	"uikit"
 	"os"
 	"time"
+	theme "uikit"
 
 	"gioui.org/app"
 	"gioui.org/layout"
@@ -64,21 +64,22 @@ func header(gtx layout.Context, th *material.Theme) layout.Dimensions {
 			// left third
 			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 				return layout.W.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return material.Body1(th, "Notifications").Layout(gtx)
+					return currentTime(gtx, th)
 				})
 			}),
 
 			// center third
 			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 				return layout.Center.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return currentTime(gtx, th)
+					Date := time.Now().Format("Jan 2, 2006")
+					return material.Body1(th, Date).Layout(gtx)
 				})
 			}),
 
 			// right third
 			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 				return layout.E.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return material.Body1(th, "Stats").Layout(gtx)
+					return material.Body1(th, "Battery").Layout(gtx)
 				})
 			}),
 		)
