@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"time"
-	theme "uikit"
+	"uikit"
 
 	"gioui.org/app"
 	"gioui.org/layout"
@@ -38,10 +38,10 @@ func main() {
 				paint.Fill(gtx.Ops, th.Palette.Bg) // color bg
 
 				layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return header(gtx, th) }),
-					layout.Flexed(0.4, func(gtx layout.Context) layout.Dimensions { return appGrid(gtx, th) }),
-					layout.Flexed(0.6, func(gtx layout.Context) layout.Dimensions { return alertWidgets(gtx, th) }),
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return footer(gtx, th) }),
+					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return header(gtx, th.Theme) }),
+					layout.Flexed(0.4, func(gtx layout.Context) layout.Dimensions { return appGrid(gtx, th.Theme) }),
+					layout.Flexed(0.6, func(gtx layout.Context) layout.Dimensions { return alertWidgets(gtx, th.Theme) }),
+					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return footer(gtx, th.Theme) }),
 				)
 
 				e.Frame(gtx.Ops) // render                                       // draw to screen.
@@ -54,16 +54,16 @@ func main() {
 
 func header(gtx layout.Context, th *material.Theme) layout.Dimensions {
 	return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
-			layout.Flexed(0.33, func(gtx layout.Context) layout.Dimensions {
-				return currentTime(gtx, th)
-			}),
-			layout.Flexed(0.33, func(gtx layout.Context) layout.Dimensions {
-				Date := time.Now().Format("Jan 2, 2006")
-					return material.Body1(th, Date).Layout(gtx)
-			}),
-			layout.Rigid( func(gtx layout.Context) layout.Dimensions {
-				return material.Body1(th, "Battery").Layout(gtx)
-			}),
+		layout.Flexed(0.33, func(gtx layout.Context) layout.Dimensions {
+			return currentTime(gtx, th)
+		}),
+		layout.Flexed(0.33, func(gtx layout.Context) layout.Dimensions {
+			Date := time.Now().Format("Jan 2, 2006")
+			return material.Body1(th, Date).Layout(gtx)
+		}),
+		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+			return material.Body1(th, "Battery").Layout(gtx)
+		}),
 	)
 }
 
