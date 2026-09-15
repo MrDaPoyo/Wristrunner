@@ -10,6 +10,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
+	"gioui.org/widget"
 	"gioui.org/widget/material"
 )
 
@@ -26,7 +27,6 @@ func main() {
 			app.MinSize(unit.Dp(450), unit.Dp(800)), // 16:9
 			app.MaxSize(unit.Dp(450), unit.Dp(800)), // 16:9
 		)
-
 		for {
 			switch e := w.Event().(type) {
 			case app.DestroyEvent:
@@ -37,7 +37,8 @@ func main() {
 
 				layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return header(gtx, th) }),
-					layout.Flexed(1, func(gtx layout.Context) layout.Dimensions { return body(gtx, th) }),
+					layout.Flexed(0.4, func(gtx layout.Context) layout.Dimensions { return appGrid(gtx, th) }),
+					layout.Flexed(0.6, func(gtx layout.Context) layout.Dimensions { return alertWidgets(gtx, th) }),
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return footer(gtx, th) }),
 				)
 
@@ -50,44 +51,105 @@ func main() {
 }
 
 func header(gtx layout.Context, th *material.Theme) layout.Dimensions {
-	return layout.Inset{
-		Top:    unit.Dp(8),
-		Bottom: unit.Dp(8),
-		Left:   unit.Dp(16),
-		Right:  unit.Dp(16),
-	}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-
-		return layout.Flex{
-			Axis: layout.Horizontal,
-		}.Layout(gtx,
-
-			// left third
-			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-				return layout.W.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return currentTime(gtx, th)
-				})
+	return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+			layout.Flexed(0.33, func(gtx layout.Context) layout.Dimensions {
+				return currentTime(gtx, th)
 			}),
-
-			// center third
-			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-				return layout.Center.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					Date := time.Now().Format("Jan 2, 2006")
+			layout.Flexed(0.33, func(gtx layout.Context) layout.Dimensions {
+				Date := time.Now().Format("Jan 2, 2006")
 					return material.Body1(th, Date).Layout(gtx)
-				})
 			}),
-
-			// right third
-			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-				return layout.E.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return material.Body1(th, "Battery").Layout(gtx)
-				})
+			layout.Rigid( func(gtx layout.Context) layout.Dimensions {
+				return material.Body1(th, "Battery").Layout(gtx)
 			}),
-		)
-	})
+	)
 }
 
-func body(gtx layout.Context, th *material.Theme) layout.Dimensions {
-	return material.Label(th, 16, "App grid goes here").Layout(gtx)
+func appGrid(gtx layout.Context, th *material.Theme) layout.Dimensions {
+	app1, app2, app3 := widget.Clickable{}, widget.Clickable{}, widget.Clickable{}
+	app4, app5, app6 := widget.Clickable{}, widget.Clickable{}, widget.Clickable{}
+	app7, app8, app9 := widget.Clickable{}, widget.Clickable{}, widget.Clickable{}
+	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app1, "App 1").Layout(gtx)
+				}),
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app2, "App 2").Layout(gtx)
+				}),
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app3, "App 3").Layout(gtx)
+				}),
+			)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app4, "App 4").Layout(gtx)
+				}),
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app5, "App 5").Layout(gtx)
+				}),
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app6, "App 6").Layout(gtx)
+				}),
+			)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app7, "App 7").Layout(gtx)
+				}),
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app8, "App 8").Layout(gtx)
+				}),
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					return material.Button(th, &app9, "App 9").Layout(gtx)
+				}),
+			)
+		}),
+	)
+}
+
+func alertWidgets(gtx layout.Context, th *material.Theme) layout.Dimensions {
+	//This needs to have a different font and also be centered in it's own little space.
+	//Try to find a more optimal way of layouting this.
+	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "W").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "R").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "I").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "S").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "T").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "R").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "U").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "N").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "N").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "E").Layout(gtx)
+		}),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			return material.Label(th, 16, "R").Layout(gtx)
+		}),
+	)
 }
 
 func footer(gtx layout.Context, th *material.Theme) layout.Dimensions {
@@ -99,10 +161,7 @@ func currentTime(gtx layout.Context, th *material.Theme) layout.Dimensions {
 
 	// redraw when the next second begins.
 	next := now.Truncate(time.Second).Add(time.Second)
-
-	gtx.Execute(op.InvalidateCmd{
-		At: next,
-	})
+	gtx.Execute(op.InvalidateCmd{At: next})
 
 	return material.Body1(
 		th,
