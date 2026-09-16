@@ -44,7 +44,7 @@ func main() {
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions { return footer(gtx, th.Theme) }),
 				)
 
-				e.Frame(gtx.Ops) // render                                       // draw to screen.
+				e.Frame(gtx.Ops) // render
 			}
 		}
 	}()
