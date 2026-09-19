@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"time"
 	"uikit"
@@ -20,13 +21,20 @@ type (
 )
 
 func main() {
-	LoadApps()
+	apps, err := LoadApps()
+	if err != nil {
+		log.Panic(err)
+	}
 
 	// the event loop
 	go func() {
 		w := new(app.Window)
 		th := uikit.VectorheartTheme() // theme customizes colors, shapes, fonts, etc.
 		var ops op.Ops                 // records a buffer that tells Gio what to draw and handle and applies them all at once.
+
+		grid := NewAppGrid(apps, func(a App) {
+			log.Println("launching", a.Name, "from", a.Path)
+		})
 
 		w.Option(
 			app.Title("Wristrunner Launcher"),
@@ -44,7 +52,9 @@ func main() {
 
 				layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 					layout.Rigid(func(gtx C) D { return header(gtx, th.Theme) }),
-					layout.Flexed(0.4, func(gtx C) D { return appGrid(gtx, th.Theme) }),
+					layout.Flexed(0.4, func(gtx C) D {
+						return grid.Layout(gtx, th.Theme)
+					}),
 					layout.Flexed(0.6, func(gtx C) D { return alertWidgets(gtx, th.Theme) }),
 					layout.Rigid(func(gtx C) D { return footer(gtx, th.Theme) }),
 				)
