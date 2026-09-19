@@ -168,7 +168,6 @@ func appGrid(gtx C, th *material.Theme) D {
 }
 
 func alertWidgets(gtx C, th *material.Theme) D {
-
 	margins := layout.Inset{
 		Top:    unit.Dp(5),
 		Left:   unit.Dp(10),
