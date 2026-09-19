@@ -8,6 +8,21 @@ sudo pacman -S --needed vulkan-headers vulkan-tools
 go install gioui.org/cmd/gogio@latest
 ```
 
+## App development
+Every app needs a `manifest.wr` file. That file should contain the following info:
+
+- `author`: Who made the app?
+- `name`: What's the app's name?
+- `version`: Self-explanatory.
+
+An example `manifest.wr` file looks like this:
+
+```toml
+author: James Bond
+name: Test
+version: 1.0.1
+```
+
 ## Layout
 ```
 software/
