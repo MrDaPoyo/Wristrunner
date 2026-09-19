@@ -1,6 +1,6 @@
-module wr-ui
+module launcher
 
-go 1.27.0
+go 1.27.1
 
 require gioui.org v0.10.2
 

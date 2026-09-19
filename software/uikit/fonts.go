@@ -1,4 +1,4 @@
-package theme
+package uikit
 
 import (
 	"io/fs"
@@ -6,7 +6,7 @@ import (
 	"gioui.org/font"
 	"gioui.org/font/opentype"
 
-	"wr-ui/assets"
+	"uikit/assets"
 )
 
 // loadFont parses a single font file into a face.
