@@ -11,8 +11,8 @@ const MANIFEST_NAME = "manifest.wr" // .wr is such a fire extension
 const APP_DIR = "../apps"
 
 type App struct {
-	Name   string
-	Author string
+	Name   string // name displayed on the grid.
+	Author string // username of who did it.
 	Path   string // absolute path to the app's root dir.
 }
 
