@@ -38,7 +38,10 @@ func (g *AppGrid) Layout(gtx C, th *material.Theme) D {
 
 	// if no apps
 	if len(g.Apps) == 0 {
-		return D{}
+		return layout.Center.Layout(gtx, func(gtx C) D {
+			return material.Body1(th, "!! No Apps Loaded !!").Layout(gtx)
+		})
+		// return D{}
 	}
 
 	// count columns
@@ -54,16 +57,15 @@ func (g *AppGrid) Layout(gtx C, th *material.Theme) D {
 		}
 	}
 
+	margins := layout.UniformInset(unit.Dp(5))
 	if cols > len(g.Apps) {
 		cols = len(g.Apps)
 	}
 	rows := (len(g.Apps) + cols - 1) / cols
 
-	margins := layout.UniformInset(unit.Dp(5))
-
 	return margins.Layout(gtx, func(gtx C) D {
 		rowChildren := make([]layout.FlexChild, rows)
-		for r := 0; r < rows; r++ {
+		for r := range rows {
 			rowChildren[r] = layout.Flexed(1, func(gtx C) D {
 				cellChildren := make([]layout.FlexChild, cols)
 				for c := 0; c < cols; c++ {

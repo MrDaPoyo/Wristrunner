@@ -11,7 +11,6 @@ import (
 	"gioui.org/op"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
-	"gioui.org/widget"
 	"gioui.org/widget/material"
 )
 
@@ -104,76 +103,6 @@ func header(gtx C, th *material.Theme) D {
 				})
 			}),
 		)
-	})
-}
-
-func appGrid(gtx C, th *material.Theme) D {
-	app1, app2, app3 := widget.Clickable{}, widget.Clickable{}, widget.Clickable{}
-	app4, app5, app6 := widget.Clickable{}, widget.Clickable{}, widget.Clickable{}
-	app7, app8, app9 := widget.Clickable{}, widget.Clickable{}, widget.Clickable{}
-	margins := layout.UniformInset(unit.Dp(5))
-	return margins.Layout(gtx, func(gtx C) D {
-		{
-			return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-				layout.Flexed(1, func(gtx C) D {
-					return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app1, "App 1").Layout(gtx)
-							})
-						}),
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app2, "App 2").Layout(gtx)
-							})
-						}),
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app3, "App 3").Layout(gtx)
-							})
-						}),
-					)
-				}),
-				layout.Flexed(1, func(gtx C) D {
-					return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app4, "App 4").Layout(gtx)
-							})
-						}),
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app5, "App 5").Layout(gtx)
-							})
-						}),
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app6, "App 6").Layout(gtx)
-							})
-						}),
-					)
-				}),
-				layout.Flexed(1, func(gtx C) D {
-					return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app7, "App 7").Layout(gtx)
-							})
-						}),
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app8, "App 8").Layout(gtx)
-							})
-						}),
-						layout.Flexed(1, func(gtx C) D {
-							return margins.Layout(gtx, func(gtx C) D {
-								return material.Button(th, &app9, "App 9").Layout(gtx)
-							})
-						}),
-					)
-				}),
-			)
-		}
 	})
 }
 
