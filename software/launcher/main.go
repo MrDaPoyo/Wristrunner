@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -12,6 +13,8 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"gioui.org/widget/material"
+
+	"github.com/distatus/battery"
 )
 
 type (
@@ -26,6 +29,10 @@ func main() {
 	}
 
 	shell := NewShell(apps)
+	battery, err := battery.Get(0)
+	if err != nil {
+		fmt.Println("Could not get battery info!")
+	}
 
 	// the event loop
 	go func() {
@@ -48,7 +55,7 @@ func main() {
 				paint.Fill(gtx.Ops, th.Palette.Bg) // color bg
 
 				layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-					layout.Rigid(func(gtx C) D { return header(gtx, th.Theme) }),
+					layout.Rigid(func(gtx C) D { return header(gtx, th.Theme, battery) }),
 					layout.Flexed(0.4, func(gtx C) D {
 						return shell.Layout(gtx, th)
 					}),
@@ -64,7 +71,7 @@ func main() {
 	app.Main() // keeps the event loop alive
 }
 
-func header(gtx C, th *material.Theme) D {
+func header(gtx C, th *material.Theme, battery *battery.Battery) D {
 	margins := layout.Inset{
 		Top:    unit.Dp(5),
 		Bottom: unit.Dp(0),
@@ -97,7 +104,8 @@ func header(gtx C, th *material.Theme) D {
 			}),
 			layout.Rigid(func(gtx C) D {
 				return batteryMargins.Layout(gtx, func(gtx C) D {
-					return material.Body1(th, "Battery").Layout(gtx)
+					percentage := battery.Current / battery.Full * 100
+					return material.Body1(th, fmt.Sprintf("%.0f%%", percentage)).Layout(gtx)
 				})
 			}),
 		)
