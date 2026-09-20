@@ -15,7 +15,7 @@ func loadFont(data []byte) []font.FontFace {
 	if err != nil {
 		panic(err)
 	}
-	return []font.FontFace{{Font: font.Font{Typeface: face.Font().Typeface}, Face: face}}
+	return []font.FontFace{{Font: face.Font(), Face: face}}
 }
 
 // LoadFonts returns the font faces bundled into the binary.
