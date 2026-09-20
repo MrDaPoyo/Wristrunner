@@ -81,21 +81,22 @@ func header(gtx C, th *material.Theme, battery *battery.Battery) D {
 	batteryMargins := layout.Inset{
 		Top:    unit.Dp(5),
 		Bottom: unit.Dp(0),
-		Left:   unit.Dp(55),
+		Left:   unit.Dp(5),
 		Right:  unit.Dp(5),
 	}
+
 	return margins.Layout(gtx, func(gtx C) D {
-		return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+		return layout.Flex{Axis: layout.Horizontal, Spacing: layout.SpaceBetween}.Layout(gtx,
 			layout.Rigid(func(gtx C) D {
 				return margins.Layout(gtx, func(gtx C) D {
 					return currentTime(gtx, th)
 				})
 			}),
-			layout.Rigid(func(gtx C) D {
-				return margins.Layout(gtx, func(gtx C) D {
-					return material.Label(th, 16, "/").Layout(gtx)
-				})
-			}),
+			// layout.Rigid(func(gtx C) D {
+			// 	return margins.Layout(gtx, func(gtx C) D {
+			// 		return material.Label(th, 16, "/").Layout(gtx)
+			// 	})
+			// }),
 			layout.Rigid(func(gtx C) D {
 				Date := time.Now().Format("Jan 2, 2006")
 				return margins.Layout(gtx, func(gtx C) D {
