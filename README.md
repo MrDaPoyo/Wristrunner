@@ -66,36 +66,36 @@ Combinations:
 
 ##Current Side Attachments
 
-Full Attachments:
-Blank Attachment
-Handle Bar
-Phone Mount
+Full Attachments: 
+Blank Attachment, 
+Handle Bar, 
+Phone Mount, 
 
-Half Attachments:
-Blank Attachment
-Handle Bar
-Stand
+Half Attachments: 
+Blank Attachment, 
+Handle Bar, 
+Stand, 
 
 Third Attachments:
 Blank Attachment
 Flashlight
 External Speakers
 
-Quarter Attachments:
-Blank Attachment
-Hook Bars
-Track Ball
-Microphone
-Go Pro Mount
+Quarter Attachments: 
+Blank Attachment, 
+Hook Bars, 
+Track Ball, 
+Microphone, 
+Go Pro Mount, 
 
-Two Thirds Attachments:
-Blank Attachment
-Expansion Hub
-External SSDs
-Handle Bar
+Two Thirds Attachments: 
+Blank Attachment, 
+Expansion Hub, 
+External SSDs, 
+Handle Bar, 
 
-Three Quarters Attachments:
-Blank Attachment
-Stream Deck Mount
-Handle Bar
+Three Quarters Attachments: 
+Blank Attachment, 
+Stream Deck Mount, 
+Handle Bar, 
 
