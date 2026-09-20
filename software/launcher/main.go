@@ -25,15 +25,13 @@ func main() {
 		log.Panic(err)
 	}
 
+	shell := NewShell(apps)
+
 	// the event loop
 	go func() {
 		w := new(app.Window)
 		th := uikit.VectorheartTheme() // theme customizes colors, shapes, fonts, etc.
 		var ops op.Ops                 // records a buffer that tells Gio what to draw and handle and applies them all at once.
-
-		grid := NewAppGrid(apps, func(a App) {
-			log.Println("launching", a.Name, "from", a.Path)
-		})
 
 		w.Option(
 			app.Title("Wristrunner Launcher"),
@@ -52,10 +50,10 @@ func main() {
 				layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 					layout.Rigid(func(gtx C) D { return header(gtx, th.Theme) }),
 					layout.Flexed(0.4, func(gtx C) D {
-						return grid.Layout(gtx, th.Theme)
+						return shell.Layout(gtx, th)
 					}),
 					layout.Flexed(0.6, func(gtx C) D { return alertWidgets(gtx, th.Theme) }),
-					layout.Rigid(func(gtx C) D { return footer(gtx, th.Theme) }),
+					layout.Rigid(func(gtx C) D { return footer(gtx, th.Theme, shell) }),
 				)
 
 				e.Frame(gtx.Ops) // render
@@ -113,67 +111,40 @@ func alertWidgets(gtx C, th *material.Theme) D {
 		Right:  unit.Dp(10),
 		Bottom: unit.Dp(12),
 	}
-	return layout.Flex{Axis: layout.Vertical, Alignment: layout.Middle}.Layout(gtx,
-		layout.Rigid(func(gtx C) D {
+
+	children := make([]layout.FlexChild, 0, len("WRISTRUNNER"))
+
+	for _, char := range "WRISTRUNNER" {
+		children = append(children, layout.Rigid(func(gtx C) D {
 			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, "W").Layout(gtx)
+				return material.Label(th, 16, string(char)).Layout(gtx)
 			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " R").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, "  I").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " S").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " T").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " R").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " U").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " N").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " N").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " E").Layout(gtx)
-			})
-		}),
-		layout.Rigid(func(gtx C) D {
-			return margins.Layout(gtx, func(gtx C) D {
-				return material.Label(th, 16, " R").Layout(gtx)
-			})
-		}),
-	)
+		}))
+	}
+	return layout.Flex{Axis: layout.Vertical, Alignment: layout.Middle}.Layout(gtx)
 }
 
-func footer(gtx C, th *material.Theme) D {
-	return material.Label(th, 14, "Nav / dock").Layout(gtx)
+func footer(gtx C, th *material.Theme, shell *Shell) D {
+	running := shell.Active() != ""
+
+	if running && shell.homeBtn.Clicked(gtx) {
+		shell.Home()
+	}
+	if running && shell.closeBtn.Clicked(gtx) {
+		shell.Close()
+	}
+
+	home := material.Button(th, &shell.homeBtn, "Home")
+	close := material.Button(th, &shell.closeBtn, "Close")
+	if !running { // greyed out on the grid
+		home.Background = th.Palette.ContrastFg
+		close.Background = th.Palette.ContrastFg
+	}
+
+	return layout.Flex{Axis: layout.Horizontal, Spacing: layout.SpaceEvenly}.Layout(gtx,
+		layout.Rigid(func(gtx C) D { return home.Layout(gtx) }),
+		layout.Rigid(func(gtx C) D { return close.Layout(gtx) }),
+	)
 }
 
 func currentTime(gtx C, th *material.Theme) D {

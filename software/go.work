@@ -4,4 +4,6 @@ use (
 	./lib
 	./uikit
 	./launcher
+	./apps/notes
+	./apps/counter
 )
