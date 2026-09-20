@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+#
+# Calls `vim` using its `vi` compatibility mode (`-C`).
+# Ignores all `vim` configuration, except for the `EXINIT` environment
+# variable and the `.exrc` file, which are required by POSIX.
+# Accepts further options.
+
+if [[ -n "${EXINIT}" ]]; then
+  readonly VIMRC="$(mktemp)"
+  trap 'rm "${VIMRC}"' EXIT
+  printf '%s\n' "${EXINIT}" > "${VIMRC}"
+elif [[ -f "${HOME}/.exrc" ]]; then
+  readonly VIMRC="${HOME}/.exrc"
+elif [[ -f './.exrc' ]]; then
+  readonly VIMRC='./.exrc'
+else
+  readonly VIMRC='NONE'
+fi
+
+exec /usr/bin/vim -C -u "${VIMRC}" "$@"

@@ -1,0 +1,11 @@
+
+See the file COPYING for copying restrictions.
+
+This package contains the libnsl library. This library contains
+the public client interface for NIS(YP).
+
+This code was formerly part of glibc, but is now standalone to
+be able to link against TI-RPC for IPv6 support.
+
+The git repository can be found at:
+https://github.com/thkukuk/libnsl

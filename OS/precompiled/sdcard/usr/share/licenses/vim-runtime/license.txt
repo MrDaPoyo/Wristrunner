@@ -1,0 +1,1 @@
+/usr/share/vim/vim92/doc/uganda.txt

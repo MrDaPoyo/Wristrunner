@@ -1,0 +1,57 @@
+#!/usr/bin/bash
+#
+#   buildenv.sh - Check that the BUILDENV and OPTIONS arrays are valid
+#
+#   Copyright (c) 2025 Pacman Development Team <pacman-dev@lists.archlinux.org>
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+[[ -n $LIBMAKEPKG_LINT_CONFIG_BUILDENV_SH ]] && return
+LIBMAKEPKG_LINT_CONFIG_BUILDENV_SH=1
+
+MAKEPKG_LIBRARY=${MAKEPKG_LIBRARY:-'/usr/share/makepkg'}
+
+source "$MAKEPKG_LIBRARY/util/message.sh"
+
+lint_config_functions+=('lint_buildenv')
+
+
+lint_buildenv() {
+	local ret=0 kopt 
+	local known_buildenv=(ccache check color distcc sign)
+	local known_option=(autodeps debug docs emptydirs libtool lto purge staticlibs strip zipman)
+
+	for i in "${BUILDENV[@]}"; do
+		for kopt in "${known_buildenv[@]}"; do
+			if [[ $i = "$kopt" || $i = "!$kopt" ]]; then
+				continue 2
+			fi
+		done
+
+		error "$(gettext "%s array contains unknown option '%s'")" "BUILDENV" "$i"
+		ret=1
+	done
+
+	for i in "${OPTIONS[@]}"; do
+		for kopt in "${known_option[@]}"; do
+			if [[ $i = "$kopt" || $i = "!$kopt" ]]; then
+				continue 2
+			fi
+		done
+
+		error "$(gettext "%s array contains unknown option '%s'")" "OPTIONS" "$i"
+		ret=1
+	done
+}

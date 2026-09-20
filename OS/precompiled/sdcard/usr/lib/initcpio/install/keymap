@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+
+build() {
+    # prevent conflicting variables from affecting vconsole.conf values
+    # shellcheck disable=SC2034
+    local KEYMAP KEYMAP_TOGGLE FONT FONT_MAP FONT_UNIMAP XKBLAYOUT XKBMODEL XKBVARIANT XKBOPTIONS
+
+    # subshell to avoid namespace pollution
+    (
+        loadkeys_opts=('-q')
+        l="$LANG"
+        unset LANG
+
+        for cfg in '/etc/vconsole.conf' /etc/locale.conf; do
+            # shellcheck disable=SC1090
+            [[ -s "$cfg" ]] && . "$cfg"
+        done
+
+        [[ -n "$LANG" ]] && LOCALE="$LANG"
+        LANG="$l"
+
+        if [[ "$LOCALE" == *[Uu][Tt][Ff]?(-)8 ]]; then
+            add_file /dev/null '/keymap.utf8' 644
+            loadkeys_opts+=('-u')
+        fi
+        if [[ "$KEYMAP" != '@kernel' ]]; then
+            loadkeys "${loadkeys_opts[@]}" "${KEYMAP:-us}" -b | add_file - '/keymap.bin' 644
+        fi
+    ) && add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+This hook loads keymap(s) specified in /etc/vconsole.conf during early userspace.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

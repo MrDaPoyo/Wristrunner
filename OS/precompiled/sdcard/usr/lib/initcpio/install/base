@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+
+build() {
+    local applet
+
+    for applet in $(/usr/lib/initcpio/busybox --list); do
+        add_symlink "/usr/bin/$applet" busybox
+    done
+
+    add_binary /usr/lib/initcpio/busybox /bin/busybox
+
+    # add kmod with applet symlinks
+    add_binary kmod
+    for applet in {dep,ins,rm,ls}mod mod{probe,info}; do
+        add_symlink "/usr/bin/$applet" kmod
+    done
+
+    add_binary blkid
+    map add_binary mount umount
+    add_binary switch_root
+
+    add_initcpio_binary "init_functions" "/init_functions"
+    add_initcpio_binary "init" "/init" 755
+}
+
+help() {
+    cat <<HELPEOF
+This hook provides crucial runtime necessities for booting. DO NOT
+remove this hook unless you know what you're doing.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

@@ -1,0 +1,59 @@
+%NAME%
+iproute2
+
+%VERSION%
+7.1.0-1
+
+%BASE%
+iproute2
+
+%DESC%
+IP Routing Utilities
+
+%URL%
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1781696320
+
+%INSTALLDATE%
+1785933461
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n0@archlinuxarm.org>
+
+%SIZE%
+5030228
+
+%REASON%
+1
+
+%LICENSE%
+GPL-2.0-or-later
+
+%VALIDATION%
+sha256
+
+%DEPENDS%
+glibc
+libxtables.so=12-64
+libcap
+libcap.so=2-64
+libelf
+libbpf
+libbpf.so=1-64
+
+%OPTDEPENDS%
+db: userspace arp daemon
+linux-atm: ATM support
+python: for routel
+
+%PROVIDES%
+iproute
+
+%XDATA%
+pkgtype=pkg
+

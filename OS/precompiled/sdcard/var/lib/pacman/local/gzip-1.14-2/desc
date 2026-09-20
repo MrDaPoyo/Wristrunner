@@ -1,0 +1,54 @@
+%NAME%
+gzip
+
+%VERSION%
+1.14-2
+
+%BASE%
+gzip
+
+%DESC%
+GNU compression utility
+
+%URL%
+https://www.gnu.org/software/gzip/
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1745789693
+
+%INSTALLDATE%
+1785933455
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n1@archlinuxarm.org>
+
+%SIZE%
+199322
+
+%REASON%
+1
+
+%LICENSE%
+GPL-3.0-or-later
+
+%VALIDATION%
+sha256
+
+%DEPENDS%
+glibc
+bash
+coreutils
+sed
+grep
+
+%OPTDEPENDS%
+less: zless support
+util-linux: zmore support
+diffutils: zdiff/zcmp support
+
+%XDATA%
+pkgtype=pkg
+

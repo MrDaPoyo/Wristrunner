@@ -1,0 +1,6 @@
+{
+    "name" : "cryptsetup",
+    "algorithm" : "sha256",
+    "nvIndex" : 30474753,
+    "priority" : 700
+}

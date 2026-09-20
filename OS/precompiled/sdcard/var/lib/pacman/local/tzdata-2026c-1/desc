@@ -1,0 +1,46 @@
+%NAME%
+tzdata
+
+%VERSION%
+2026c-1
+
+%BASE%
+tzdata
+
+%DESC%
+Sources for time zone and daylight saving time data
+
+%URL%
+https://www.iana.org/time-zones
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1783580885
+
+%INSTALLDATE%
+1785933442
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n1@archlinuxarm.org>
+
+%SIZE%
+1775703
+
+%REASON%
+1
+
+%LICENSE%
+LicenseRef-tz
+
+%VALIDATION%
+sha256
+
+%OPTDEPENDS%
+bash: for tzselect
+glibc: for zdump, zic
+
+%XDATA%
+pkgtype=pkg
+

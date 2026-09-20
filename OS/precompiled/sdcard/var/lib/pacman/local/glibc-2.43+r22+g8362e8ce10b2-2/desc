@@ -1,0 +1,52 @@
+%NAME%
+glibc
+
+%VERSION%
+2.43+r22+g8362e8ce10b2-2
+
+%BASE%
+glibc
+
+%DESC%
+GNU C Library
+
+%URL%
+https://www.gnu.org/software/libc
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1777809590
+
+%INSTALLDATE%
+1785933444
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+seattle@archlinuxarm.org>
+
+%SIZE%
+60014558
+
+%REASON%
+1
+
+%LICENSE%
+GPL-2.0-or-later
+LGPL-2.1-or-later
+
+%VALIDATION%
+sha256
+
+%DEPENDS%
+linux-api-headers>=4.10
+tzdata
+filesystem
+
+%OPTDEPENDS%
+gd: for memusagestat
+perl: for mtrace
+
+%XDATA%
+pkgtype=split
+

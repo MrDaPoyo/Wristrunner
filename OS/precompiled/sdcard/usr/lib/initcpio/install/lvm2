@@ -1,0 +1,52 @@
+#!/usr/bin/bash
+
+build() {
+    local symlink
+
+    # device mapper modules
+    map add_module \
+        'dm-mod' \
+        'dm-snapshot?' \
+        'dm-mirror?' \
+        'dm-cache?' \
+        'dm-cache-smq?' \
+        'dm-writecache?' \
+        'dm-thin-pool?' \
+        'dm-raid?' \
+        'raid0?' \
+        'raid1?' \
+        'raid10?' \
+        'raid456?' \
+        'dm-integrity?' \
+        'dm-vdo?'
+
+    # from thin-provisioning-tools
+    add_binary 'pdata_tools'
+    while IFS='' read -r -d '' symlink; do
+        add_symlink "$symlink"
+    done < <(LC_ALL=C.UTF-8 find -L /usr/bin/ -samefile "$(type -P pdata_tools)" -xtype l -print0)
+
+    # udev rules and lvm configuration
+    map add_udev_rule \
+        '10-dm.rules' \
+        '11-dm-lvm.rules' \
+        '13-dm-disk.rules' \
+        '95-dm-notify.rules'
+
+    # this udev rule is specific for systemd and non-systemd systems
+    if declare -F add_systemd_unit &>/dev/null; then
+        add_udev_rule '69-dm-lvm.rules'
+    else
+        add_udev_rule '/usr/lib/initcpio/udev/69-dm-lvm.rules'
+    fi
+
+    # config file
+    sed -e 's/^[[:space:]#]*monitoring = [[:digit:]]\+\s*$/\tmonitoring = 0/' \
+        -e '/^$/d' -e '/^[[:space:]]*#/d' "/etc/lvm/lvm.conf" | add_file - '/etc/lvm/lvm.conf' 644
+}
+
+help() {
+  cat <<HELPEOF
+This hook enables all detected LVM2 volumes in initramfs.
+HELPEOF
+}

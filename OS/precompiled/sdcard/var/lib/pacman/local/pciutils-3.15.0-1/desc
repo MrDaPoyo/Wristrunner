@@ -1,0 +1,53 @@
+%NAME%
+pciutils
+
+%VERSION%
+3.15.0-1
+
+%BASE%
+pciutils
+
+%DESC%
+PCI bus configuration space access library and tools
+
+%URL%
+https://mj.ucw.cz/sw/pciutils/
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1775644228
+
+%INSTALLDATE%
+1785933453
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n1@archlinuxarm.org>
+
+%SIZE%
+551072
+
+%REASON%
+1
+
+%LICENSE%
+GPL-2.0-only
+
+%VALIDATION%
+sha256
+
+%DEPENDS%
+glibc
+hwdata
+kmod
+systemd-libs
+
+%OPTDEPENDS%
+which: for update-pciids
+grep: for update-pciids
+curl: for update-pciids
+
+%XDATA%
+pkgtype=pkg
+

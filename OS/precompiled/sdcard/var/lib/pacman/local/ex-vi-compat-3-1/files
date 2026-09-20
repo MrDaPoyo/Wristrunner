@@ -1,0 +1,13 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/edit
+usr/bin/ex
+usr/bin/vedit
+usr/bin/vi
+usr/bin/view
+usr/share/
+usr/share/licenses/
+usr/share/licenses/ex-vi-compat/
+usr/share/licenses/ex-vi-compat/0BSD.txt
+

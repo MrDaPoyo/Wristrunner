@@ -1,0 +1,54 @@
+%NAME%
+nftables
+
+%VERSION%
+1:1.1.6-3
+
+%BASE%
+nftables
+
+%DESC%
+Netfilter tables userspace tools
+
+%URL%
+https://netfilter.org/projects/nftables/
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1772453076
+
+%INSTALLDATE%
+1785933460
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n1@archlinuxarm.org>
+
+%SIZE%
+1374531
+
+%REASON%
+1
+
+%LICENSE%
+GPL-2.0-only
+
+%VALIDATION%
+sha256
+
+%DEPENDS%
+glibc
+gmp
+jansson
+libmnl
+libnftnl
+readline
+
+%OPTDEPENDS%
+python: Python bindings
+python-jsonschema: Python bindings
+
+%XDATA%
+pkgtype=pkg
+

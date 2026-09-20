@@ -1,0 +1,251 @@
+#!/usr/bin/bash
+#
+#   strip.sh - Strip debugging symbols from binary files
+#
+#   Copyright (c) 2007-2025 Pacman Development Team <pacman-dev@lists.archlinux.org>
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+[[ -n "$LIBMAKEPKG_TIDY_STRIP_SH" ]] && return
+LIBMAKEPKG_TIDY_STRIP_SH=1
+
+MAKEPKG_LIBRARY=${MAKEPKG_LIBRARY:-'/usr/share/makepkg'}
+
+source "$MAKEPKG_LIBRARY/util/message.sh"
+source "$MAKEPKG_LIBRARY/util/option.sh"
+
+
+packaging_options+=('strip' 'debug')
+tidy_modify+=('tidy_strip')
+
+
+build_id() {
+	LANG=C readelf -n "$1" | sed -n '/Build ID/ { s/.*: //p; q; }'
+}
+
+source_files() {
+	# This function does two things:
+	#
+	# 1) rewrites source file locations for packages not respecting prefix-
+	#    map switches.  This ensures all source file references in debug
+	#    info point to $dbgsrcdir.
+	#
+	# 2) outputs a list of files from the package source files to stdout
+	#    while stripping the $dbgsrcdir prefix
+
+	LANG=C debugedit --no-recompute-build-id \
+		--base-dir "${srcdir}" \
+		--dest-dir "${dbgsrcdir}" \
+		--list-file /dev/stdout "$1" \
+		| sort -zu | tr '\0' '\n'
+}
+
+package_source_files() {
+	local binary=$1
+
+	local file dest t
+	while IFS= read -r t; do
+		file="${srcdir}/${t}"
+		dest="${dbgsrc}/${t}"
+		mkdir -p "${dest%/*}"
+		if [[ -f "$file" && ! -f "$dest" ]]; then
+			cp -- "$file" "$dest" 2>/dev/null
+		fi
+	done < <(source_files "$binary")
+}
+
+safe_objcopy() {
+	local binary=$1; shift
+	local tempfile=$(mktemp "$binary.XXXXXX")
+	objcopy "$@" "$binary" "$tempfile"
+	cat "$tempfile" > "$binary"
+	rm "$tempfile"
+}
+
+collect_debug_symbols() {
+	local binary=$1; shift
+
+	if check_option "debug" "y"; then
+		local bid=$(build_id "$binary")
+
+		# has this file already been stripped
+		if [[ -n "$bid" ]]; then
+			if [[ -f "$dbgdir/.build-id/${bid:0:2}/${bid:2}.debug" ]]; then
+				return
+			fi
+		elif [[ -f "$dbgdir/$binary.debug" ]]; then
+			return
+		fi
+
+		# add GDB index if gdb-add-index is present
+		if type -p gdb-add-index >/dev/null; then
+			gdb-add-index "$binary"
+		fi
+
+		# copy source files to debug directory
+		package_source_files "$binary"
+
+		# copy debug symbols to debug directory
+		mkdir -p "$dbgdir/${binary%/*}"
+
+		# abandon processing files that are not a recognised format
+		if ! objcopy --only-keep-debug "$binary" "$dbgdir/$binary.debug" 2>/dev/null; then
+			return
+		fi
+
+		safe_objcopy "$binary" --remove-section=.gnu_debuglink
+		safe_objcopy "$binary" --add-gnu-debuglink="$dbgdir/${binary#/}.debug"
+
+		if [[ -n "$bid" ]]; then
+			local target
+			mkdir -p "$dbgdir/.build-id/${bid:0:2}"
+
+			target="../../../../../${binary#./}"
+			target="${target/..\/..\/usr\/lib\/}"
+			target="${target/..\/usr\/}"
+			ln -s "$target" "$dbgdir/.build-id/${bid:0:2}/${bid:2}"
+
+			target="../../${binary#./}.debug"
+			ln -s "$target" "$dbgdir/.build-id/${bid:0:2}/${bid:2}.debug"
+		fi
+	fi
+}
+
+safe_strip_file(){
+	local binary=$1; shift
+	local tempfile=$(mktemp "$binary.XXXXXX")
+	if strip "$@" "$binary" -o "$tempfile"; then
+		cat "$tempfile" > "$binary"
+	fi
+	rm -f "$tempfile"
+}
+
+safe_strip_lto() {
+	local binary=$1;
+
+	local tempfile=$(mktemp "$binary.XXXXXX")
+	if strip -R .gnu.lto_* -R .gnu.debuglto_* -N __gnu_lto_v1 "$binary" -o "$tempfile"; then
+		cat "$tempfile" > "$binary"
+	fi
+	rm -f "$tempfile"
+}
+
+process_file_stripping() {
+	local binary="$1"
+	local strip_flags
+
+	# skip filepaths that cause stripping issues - ideally these should be temporary
+	# guile-2.2
+	[[ "$binary" =~ .*/guile/.*\.go$ ]] && return
+
+	local STATICOBJ=0
+	case "$(LC_ALL=C readelf -h "$binary" 2>/dev/null)" in
+		*Type:*'DYN (Shared object file)'*) # Libraries (.so) or Relocatable binaries
+			strip_flags="$STRIP_SHARED";;
+		*Type:*'DYN (Position-Independent Executable file)'*) # Relocatable binaries
+			strip_flags="$STRIP_SHARED";;
+		*Type:*'EXEC (Executable file)'*) # Binaries
+			if [[ "$(readelf -x .dynamic "$binary" 2>/dev/null)" ]]; then
+				strip_flags="$STRIP_BINARIES"
+			else
+				strip_flags="$STRIP_STATIC"
+			fi
+			;;
+		*Type:*'REL (Relocatable file)'*) # Libraries (.a) or objects
+			if [[ $binary = *'.o' ]] || ar t "$binary" &>/dev/null; then
+				strip_flags="$STRIP_STATIC"
+				STATICOBJ=1
+			elif [[ $binary = *'.ko' ]]; then # Kernel modules
+				strip_flags="$STRIP_SHARED"
+			else
+				return
+			fi
+			;;
+		*)
+			return ;;
+	esac
+	(( ! STATICOBJ )) && collect_debug_symbols "$binary"
+	safe_strip_file "$binary" ${strip_flags}
+	(( STATICOBJ )) && safe_strip_lto "$binary"
+}
+
+tidy_strip() {
+	if check_option "strip" "y"; then
+		msg2 "$(gettext "Stripping unneeded symbols from binaries and libraries...")"
+		# make sure library stripping variables are defined to prevent excess stripping
+		[[ -z ${STRIP_SHARED+x} ]] && STRIP_SHARED="-S"
+		[[ -z ${STRIP_STATIC+x} ]] && STRIP_STATIC="-S"
+
+		if check_option "debug" "y"; then
+			dbgdir="$pkgdirbase/$pkgbase-debug/usr/lib/debug"
+			dbgsrcdir="${DBGSRCDIR:-/usr/src/debug}/${pkgbase}"
+			dbgsrc="$pkgdirbase/$pkgbase-debug$dbgsrcdir"
+			mkdir -p "$dbgdir" "$dbgsrc"
+		fi
+
+		_parallel_stripper() {
+			# Inherit traps in subshell to perform cleanup after an interrupt
+			set -E
+			(
+				local jobs binary
+
+				while IFS= read -rd '' binary ; do
+					# Be sure to keep the number of concurrently running processes less
+					# than limit value to prevent an accidental fork bomb.
+					jobs=($(jobs -p))
+					(( ${#jobs[@]} >= $NPROC )) && wait -n "${jobs[@]}"
+
+					process_file_stripping "$binary" &
+				done < <(find . -type f -perm -u+w -links 1 -print0 2>/dev/null)
+
+				# Wait for all jobs to complete
+				wait
+			)
+			set +E
+		}
+		_parallel_stripper
+
+		# hardlinks only need processed once, but need additional links in debug packages
+		declare -A hardlinks
+		while IFS= read -rd '' binary ; do
+			if check_option "debug" "y"; then
+				local inode="$(stat -c '%i %n' -- "$binary")"
+				inode=${inode%% *}
+				if [[ -z "${hardlinks[$inode]}" ]]; then
+					hardlinks[$inode]="$binary"
+				else
+					if [[ -f "$dbgdir/${hardlinks[$inode]}.debug" ]]; then
+						mkdir -p "$dbgdir/${binary%/*}"
+						ln "$dbgdir/${hardlinks[$inode]}.debug" "$dbgdir/${binary}.debug"
+						continue
+					fi
+				fi
+			fi
+			process_file_stripping "$binary"
+		done < <(find . -type f -perm -u+w -links +1 -print0 2>/dev/null | LC_ALL=C sort -z)
+
+	elif check_option "debug" "y"; then
+		msg2 "$(gettext "Copying source files needed for debug symbols...")"
+
+		dbgsrcdir="${DBGSRCDIR:-/usr/src/debug}/${pkgbase}"
+		dbgsrc="$pkgdirbase/$pkgbase/$dbgsrcdir"
+		mkdir -p "$dbgsrc"
+
+		local binary
+		find . -type f -perm -u+w -print0 2>/dev/null | while IFS= read -rd '' binary ; do
+			package_source_files "$binary" 2>/dev/null
+		done
+	fi
+}

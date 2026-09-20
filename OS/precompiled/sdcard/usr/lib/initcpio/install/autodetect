@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+
+build() {
+    local m=''
+    local -a md_devs mods
+    local -i attempts_left
+
+    # allow other hooks to customize behavior if autodetect is run them
+    # shellcheck disable=SC2034
+    declare -gri mkinitcpio_autodetect=1
+
+    [[ "$KERNELVERSION" == 'none' ]] && return 0
+
+    auto_modules() {
+        # Perform auto detection of modules via sysfs.
+
+        local mods=() uevents
+
+        # Look for uevents
+        for (( attempts_left=2; attempts_left; --attempts_left )); do
+            if uevents="$(LC_ALL=C.UTF-8 find /sys/devices -name uevent -exec sort -u {} +)"; then
+                break
+            fi
+            if (( attempts_left > 1 )); then
+                # Sleep and try again to avoid a race condition with udev
+                # NOTE: This is a best-effort workaround for what is assumed to be
+                # a bug in `udevadm settle` where the command exits while the
+                # devices have not yet settled. See
+                # https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio/-/issues/177
+                # and https://bugs.archlinux.org/task/77789 for details.
+                warning 'An error was encountered during device lookup. Retrying.'
+                sleep 1
+            else
+                error 'An error was encountered during device lookup.'
+                return 1
+            fi
+        done
+        mapfile -t mods < <(sed -n 's/\(DRIVER\|MODALIAS\)=\(.\+\)/\2/p' <<<"$uevents")
+        mapfile -t mods < <(modprobe -S "$KERNELVERSION" -qaR "${mods[@]}" | LC_ALL=C.UTF-8 sort -u)
+
+        (( ${#mods[*]} )) && printf "%s\n" "${mods[@]//-/_}"
+    }
+
+    add_if_avail() {
+        local r='' resolved=()
+
+        # treat this as an alias, since ext3 might be aliased to ext4. also, as
+        # of linux 3.9, we can find any filesystem by the alias "fs-$name"
+        # rather than having to guess at the corresponding module name.
+        mapfile -t resolved < <(modprobe -S "$KERNELVERSION" -qaR {fs-,}"$1")
+
+        for r in "${resolved[@]}"; do
+            _autodetect_cache["$r"]=1
+        done
+    }
+
+    if [[ ! -d /sys/devices ]]; then
+        error "/sys does not appear to be mounted. Unable to use autodetection"
+        return 1
+    fi
+
+    mapfile -t mods < <(auto_modules)
+    if (( ! ${#mods[@]} )); then
+        error 'Cannot acquire used modules. Unable to use autodetection.'
+        return 1
+    fi
+
+    for m in "${mods[@]}"; do
+        _autodetect_cache["$m"]=1
+    done
+
+    # detect filesystem for root
+    if rootfstype="$(findmnt -uno fstype -T '/')"; then
+        if [[ "${rootfstype}" == "overlay" ]]; then
+            warning "cannot detect type of overlayfs root filesystem"
+            # fs_autodetect_failed is used by other hooks called after this one
+            # shellcheck disable=SC2034
+            fs_autodetect_failed=1
+        else
+            add_if_avail "$rootfstype"
+        fi
+    else
+        error "failed to detect root filesystem"
+        # fs_autodetect_failed is used by other hooks called after this one
+        # shellcheck disable=SC2034
+        fs_autodetect_failed=1
+    fi
+
+    # detect filesystem for separate /usr
+    if usrfstype="$(findmnt -snero fstype -T '/usr')"; then
+        add_if_avail "$usrfstype"
+    fi
+
+    # scan for md raid devices
+    mapfile -t md_devs < <(compgen -G '/sys/class/block/md*/md/level')
+    if (( ${#md_devs[@]} )); then
+        quiet "found %d mdadm arrays to scan" "${#md_devs[*]}"
+        mapfile -t mods < <(awk '{ gsub(/raid[456]/, "raid456"); print; }' "${md_devs[@]}")
+        for m in "${mods[@]}"; do
+            _autodetect_cache["$m"]=1
+        done
+    fi
+
+    if (( ${#_autodetect_cache[*]} )); then
+        quiet "caching %d modules" "${#_autodetect_cache[*]}"
+    fi
+}
+
+help() {
+    cat <<HELPEOF
+This hook shrinks your initramfs to a smaller size by autodetecting the needed
+modules. Be sure to verify included modules are correct and none are missing.
+This hook must be run before other subsystem hooks in order to take advantage
+of auto-detection.  Any hooks placed before 'autodetect' will be installed in
+full.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

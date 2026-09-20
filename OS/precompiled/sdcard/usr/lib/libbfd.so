@@ -1,0 +1,3 @@
+/* GNU ld script */
+
+INPUT( /usr/lib/libbfd.a -lsframe -liberty -lz -lzstd -ldl )

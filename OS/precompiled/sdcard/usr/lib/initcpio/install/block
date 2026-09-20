@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+
+build() {
+    map add_module 'ahci?' 'sd_mod?' 'usb_storage?' 'uas?' 'mmc_block?' 'nvme?' 'virtio_scsi?' 'virtio_blk?'
+
+    # pata, sata, scsi, nvme
+    add_checked_modules '/(block|ata|scsi|fusion|nvme)/'
+
+    # usb
+    add_checked_modules -f '(_cs|sl811_hcd|isp116x_hcd)' '/usb/host'
+    add_checked_modules '/drivers/usb/storage/'
+
+    # firewire
+    add_checked_modules '/drivers/firewire/'
+
+    # mmc
+    add_checked_modules '/(drivers/mmc|tifm_)'
+
+    # spi (mmc in spi mode)
+    add_checked_modules '/drivers/spi/'
+
+    # regulator (for mmc)
+    add_checked_modules '/drivers/regulator/'
+
+    # virtio
+    add_checked_modules 'virtio'
+
+    # nvdimm
+    add_checked_modules '/drivers/nvdimm/'
+
+    # pci controller
+    add_checked_modules '/drivers/pci/controller/'
+
+    # low-level drivers for certain pci/usb controllers
+    add_checked_modules '/drivers/mfd/'
+    add_checked_modules '/drivers/clk/'
+    add_checked_modules '/drivers/phy/'
+
+    # ufs
+    add_checked_modules '/drivers/ufs/'
+}
+
+help() {
+    cat <<HELPEOF
+This hook loads the necessary modules for most block devices using pata, sata,
+scsi, firewire, usb, or mmc. Detection will take place at runtime. To minimize
+the modules in the image, add the autodetect hook too.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

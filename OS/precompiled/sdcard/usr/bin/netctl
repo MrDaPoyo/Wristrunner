@@ -1,0 +1,192 @@
+#! /bin/bash
+
+. /usr/lib/netctl/globals
+
+
+usage() {
+    cat << END
+Usage: netctl {COMMAND} [PROFILE]
+              [--help|--version]
+
+Commands:
+  list                   List available profiles
+  store                  Save which profiles are active
+  restore                Load saved profiles
+  stop-all               Stops all profiles
+  start [PROFILE]        Start a profile
+  stop [PROFILE]         Stop a profile
+  restart [PROFILE]      Restart a profile
+  switch-to [PROFILE]    Switch to a profile
+  is-active [PROFILE]    Check whether a profile is active
+  status [PROFILE]       Show runtime status of a profile
+  enable [PROFILE]       Enable the systemd unit for a profile
+  disable [PROFILE]      Disable the systemd unit for a profile
+  reenable [PROFILE]     Reenable the systemd unit for a profile
+  is-enabled [PROFILE]   Check whether a profile is enabled
+  edit [PROFILE]         Edit a profile file
+  verify [PROFILE]       Check the syntax of a profile file
+  wait-online [PROFILE]  Wait for a profile to finish connecting
+END
+}
+
+list() {
+    local indicators=( ' ' '+' '*' ) i
+    list_profiles | while IFS= read -r Profile; do
+        if sd_call "is-active --quiet" "$Profile" &> /dev/null; then
+            [[ $(sd_status_text "$Profile") == "online" ]]
+            (( i = 2 - $? ))
+        else
+            (( i = 0 ))
+        fi
+        printf '%s %s\n' "${indicators[i]}" "$Profile"
+    done
+}
+
+store() {
+    mkdir -p "$(dirname "$STATE_FILE")"
+    list_profiles | while IFS= read -r Profile; do
+        if sd_call "is-active --quiet" "$Profile" &> /dev/null; then
+            printf '%s\n' "$Profile"
+        fi
+    done > "$STATE_FILE"
+}
+
+restore() {
+    if [[ ! -r $STATE_FILE ]]; then
+        exit_error "Could not read state file '$STATE_FILE'"
+    elif [[ ! -s $STATE_FILE ]]; then
+        report_debug "No profiles to restore in state file '$STATE_FILE'"
+    else
+        mapfile -t Profiles < "$STATE_FILE"
+        do_debug sd_call start "${Profiles[@]}"
+    fi
+}
+
+stop_all() {
+    # We cannot pipe to mapfile, as the end of a pipe is inside a subshell
+    mapfile -t Profiles < <(list_profiles)
+    if (( ${#Profiles[@]} )); then
+        do_debug sd_call stop "${Profiles[@]}" 2> >(grep -Fv 'not loaded' >&2)
+    fi
+}
+
+switch_to() {
+    Interface=$(. "$PROFILE_DIR/$1" >/dev/null; printf '%s' "$Interface")
+    if [[ -z $Interface ]]; then
+        exit_error "Profile '$1' does not specify an interface"
+    fi
+    mapfile -t Profiles < <(filter_profiles "$Interface")
+    if (( ${#Profiles[@]} )); then
+        do_debug sd_call stop "${Profiles[@]}" 2> >(grep -Fv 'not loaded' >&2)
+    fi
+    do_debug sd_call start "$1"
+}
+
+unit_enable() {
+    local unit=$(systemd-escape --template=netctl@.service "$1") target
+    load_profile "$1"
+
+    target="/etc/systemd/system/multi-user.target.wants/$unit"
+    if [[ -e $target ]]; then
+        report_error "The profile '$1' is already enabled"
+        return 1
+    fi
+    do_readable mkdir -p "$(dirname "$target")"
+    ln -vs "/usr/lib/systemd/system/netctl@.service" "$target"
+
+    target="/etc/systemd/system/$unit.d/profile.conf"
+    do_readable mkdir -p "$(dirname "$target")"
+    do_readable touch "$target"
+    echo "[Unit]" > "$target"
+    if [[ $Description ]]; then
+        echo "Description=$Description" >> "$target"
+    fi
+    declare -p BindsToInterfaces &> /dev/null || BindsToInterfaces=$Interface
+    if (( ${#BindsToInterfaces[@]} )); then
+        : ${InterfaceRoot=sys/subsystem/net/devices/}
+        printf "BindsTo=$(systemd-escape "$InterfaceRoot")%s.device\n" \
+               $(systemd-escape "${BindsToInterfaces[@]}") >> "$target"
+        printf "After=$(systemd-escape "$InterfaceRoot")%s.device\n" \
+               $(systemd-escape "${BindsToInterfaces[@]}") >> "$target"
+    fi
+    if (( ${#After[@]} )); then
+        printf 'After=netctl@%s.service\n' \
+               $(systemd-escape "${After[@]}") >> "$target"
+    fi
+    report_notice "generated '$target'"
+}
+
+unit_disable() {
+    local unit=$(systemd-escape --template=netctl@.service "$1")
+    rm -vfd "/etc/systemd/system"{/multi-user.target.wants,}"/$unit" \
+            "/etc/systemd/system/$unit.d"{/profile.conf,}
+}
+
+unit_reenable() {
+    unit_disable "$1"
+    unit_enable "$1"
+}
+
+wait_online() {
+    local profile="$1"
+    if ! timeout_wait "${TIMEOUT_ONLINE:-120}" \
+                      '! sd_call "is-active --quiet" "$profile" || \
+                       [[ $(sd_status_text "$profile") == "online" ]]'; then
+        report_notice "timeout"
+        return 1
+    elif ! sd_call "is-active --quiet" "$profile"; then
+        report_notice "failed"
+        return 1
+    fi
+}
+
+
+case $# in
+  1)
+    case $1 in
+      --version)
+        report_notice "netctl version $NETCTL_VERSION";;
+      --help)
+        usage;;
+      list)
+        list;;
+      store|restore)
+        ensure_root "$(basename "$0")"
+        "$1";;
+      stop-all)
+        stop_all;;
+      *)
+        exit_error "$(usage)";;
+    esac;;
+  2)
+    case $1 in
+      start|stop|restart|is-active|status|is-enabled)
+        sd_call "$1" "$2";;
+      switch-to)
+        ensure_root "$(basename "$0")"
+        verify_profile "$2"
+        switch_to "$2";;
+      enable|disable|reenable)
+        ensure_root "$(basename "$0")"
+        if [[ $1 != "disable" ]]; then
+            verify_profile "$2"
+        fi
+        "unit_$1" "$2"
+        if systemd-notify --booted; then
+            systemctl daemon-reload
+        fi;;
+      edit)
+        exec ${EDITOR:-nano} "$PROFILE_DIR/$2";;
+      verify)
+        verify_profile "$2";;
+      wait-online)
+        wait_online "$2";;
+      *)
+        exit_error "$(usage)";;
+    esac;;
+  *)
+    exit_error "$(usage)";;
+esac
+
+
+# vim: ft=sh ts=4 et sw=4:

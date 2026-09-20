@@ -1,0 +1,66 @@
+%NAME%
+glib2
+
+%VERSION%
+2.88.3-1
+
+%BASE%
+glib2
+
+%DESC%
+Low level core library
+
+%URL%
+https://gitlab.gnome.org/GNOME/glib
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1785505432
+
+%INSTALLDATE%
+1785933456
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n1@archlinuxarm.org>
+
+%SIZE%
+43001796
+
+%REASON%
+1
+
+%LICENSE%
+LGPL-2.1-or-later
+
+%VALIDATION%
+sha256
+
+%DEPENDS%
+bash
+glibc
+libffi
+libsysprof-capture
+pcre2
+util-linux-libs
+zlib
+libffi.so=8-64
+libmount.so=1-64
+
+%OPTDEPENDS%
+dconf: GSettings storage backend
+glib2-devel: development tools
+gvfs: most gio functionality
+
+%PROVIDES%
+libglib-2.0.so=0-64
+libgio-2.0.so=0-64
+libgirepository-2.0.so=0-64
+libgmodule-2.0.so=0-64
+libgobject-2.0.so=0-64
+libgthread-2.0.so=0-64
+
+%XDATA%
+pkgtype=split
+

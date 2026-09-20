@@ -1,0 +1,102 @@
+%NAME%
+systemd
+
+%VERSION%
+261.2-1
+
+%BASE%
+systemd
+
+%DESC%
+system and service manager
+
+%URL%
+https://www.github.com/systemd/systemd
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1784915517
+
+%INSTALLDATE%
+1785933458
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+n0@archlinuxarm.org>
+
+%SIZE%
+55361039
+
+%REASON%
+1
+
+%LICENSE%
+LGPL-2.1-or-later
+CC0-1.0
+GPL-2.0-or-later
+MIT-0
+
+%VALIDATION%
+sha256
+
+%REPLACES%
+nss-myhostname
+systemd-tools
+udev
+
+%DEPENDS%
+systemd-libs=261.2
+acl
+bash
+cryptsetup
+dbus
+dbus-units
+kbd
+kmod
+hwdata
+libgcrypt
+libxcrypt
+libidn2
+lz4
+pam
+libelf
+libseccomp
+util-linux
+xz
+pcre2
+audit
+openssl
+
+%OPTDEPENDS%
+apparmor: additional security features
+curl: systemd-journal-upload, machinectl pull-tar and pull-raw
+gnutls: systemd-journal-gatewayd and systemd-journal-remote
+iptables: firewall features
+libarchive: convert DDIs to tarballs
+libbpf: support BPF programs
+libfido2: unlocking LUKS2 volumes with FIDO2 token
+libmicrohttpd: systemd-journal-gatewayd and systemd-journal-remote
+libp11-kit: support PKCS#11
+libpwquality: check password quality
+polkit: allow administration as unprivileged user
+qemu-base: systemd-vmspawn
+qrencode: show QR codes
+quota-tools: kernel-level quota management
+systemd-sysvcompat: symlink package to provide sysvinit binaries
+systemd-ukify: combine kernel and initrd into a signed Unified Kernel Image
+tpm2-tss: unlocking LUKS2 volumes with TPM2
+
+%CONFLICTS%
+nss-myhostname
+systemd-tools
+udev
+
+%PROVIDES%
+nss-myhostname
+systemd-tools=261.2
+udev=261.2
+
+%XDATA%
+pkgtype=split
+

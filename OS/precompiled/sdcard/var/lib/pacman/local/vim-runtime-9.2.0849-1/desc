@@ -1,0 +1,47 @@
+%NAME%
+vim-runtime
+
+%VERSION%
+9.2.0849-1
+
+%BASE%
+vim
+
+%DESC%
+Vi Improved, a highly configurable, improved version of the vi text editor (shared runtime)
+
+%URL%
+https://www.vim.org
+
+%ARCH%
+aarch64
+
+%BUILDDATE%
+1784930345
+
+%INSTALLDATE%
+1785933462
+
+%PACKAGER%
+Arch Linux ARM Build System <builder+seattle@archlinuxarm.org>
+
+%SIZE%
+40412681
+
+%REASON%
+1
+
+%LICENSE%
+custom:vim
+
+%VALIDATION%
+sha256
+
+%OPTDEPENDS%
+sh: support for some tools and macros
+python: demoserver example tool
+gawk: mve tools support
+
+%XDATA%
+pkgtype=split
+

@@ -1,0 +1,16 @@
+[Unit]
+Description=Cyberdeck Launcher
+After=systemd-user-sessions.service getty@tty1.service
+Conflicts=getty@tty1.service
+
+[Service]
+ExecStart=/usr/local/bin/wristrunner-launcher
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/tty1
+Restart=always
+RestartSec=2
+User=root
+
+[Install]
+WantedBy=multi-user.target

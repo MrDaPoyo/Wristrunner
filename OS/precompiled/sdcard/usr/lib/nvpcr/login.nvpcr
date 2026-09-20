@@ -1,0 +1,6 @@
+{
+    "name" : "login",
+    "algorithm" : "sha256",
+    "nvIndex" : 30474755,
+    "priority" : 800
+}

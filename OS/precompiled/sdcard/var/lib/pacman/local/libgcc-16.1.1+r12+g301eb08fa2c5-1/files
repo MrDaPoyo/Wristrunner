@@ -1,0 +1,11 @@
+%FILES%
+usr/
+usr/lib/
+usr/lib/libgcc_s.so
+usr/lib/libgcc_s.so.1
+usr/lib/libgcc_s_asneeded.so
+usr/share/
+usr/share/licenses/
+usr/share/licenses/libgcc/
+usr/share/licenses/libgcc/RUNTIME.LIBRARY.EXCEPTION
+
