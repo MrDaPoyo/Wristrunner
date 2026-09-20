@@ -146,7 +146,9 @@ func footer(gtx C, th *material.Theme, shell *Shell) D {
 	close := material.Button(th, &shell.closeBtn, "Close")
 	if !running { // greyed out on the grid
 		home.Background = th.Palette.ContrastFg
+		home.Color = th.Palette.Fg
 		close.Background = th.Palette.ContrastFg
+		close.Color = th.Palette.Fg
 	}
 
 	return layout.Flex{Axis: layout.Horizontal, Spacing: layout.SpaceEvenly}.Layout(gtx,
