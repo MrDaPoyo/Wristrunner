@@ -39,7 +39,7 @@ type App struct {
 	body    widget.Editor
 	backBtn widget.Clickable
 	saveBtn widget.Clickable
-	addBtn widget.Clickable
+	addBtn  widget.Clickable
 }
 
 func New() uikit.App {
@@ -48,15 +48,16 @@ func New() uikit.App {
 
 	dir, err := lib.DataDir("notes")
 	if err != nil {
-		a.store = newStore(dir)
-		notes, err := a.store.load()
-		if err != nil {
-			log.Printf("notes: load: %v", err)
-		}
-		a.Notes = notes
-	} else {
 		log.Printf("notes: data dir: %v", err)
+		return a // no store: the app still runs, just in memory
 	}
+
+	a.store = newStore(dir)
+	notes, err := a.store.load()
+	if err != nil {
+		log.Printf("notes: load: %v", err)
+	}
+	a.Notes = notes
 
 	return a
 }
