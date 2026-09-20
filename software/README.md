@@ -23,6 +23,8 @@ name: Test
 version: 1.0.1
 ```
 
+Apps should also be included in `launcher/registry.go`
+
 ## Layout
 ```
 software/
