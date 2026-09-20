@@ -64,7 +64,7 @@ Combinations:
 1 Third +  1 Two Third
 1 Quarter + 1 Three Quarter
 
-##Current Side Attachments
+## Current Side Attachments
 
 Full Attachments: 
 Blank Attachment, 
