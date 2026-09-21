@@ -29,31 +29,31 @@ Top: 165 x 10 x ?
 Half Length - 
 
 Bottom: 74.5 x 10 x 1
-Middle: 5 offset 69.5 x 5 x 1
+Middle: 5 offset 64.5 x 5 x 1
 Top: 82.5 x 10 x ?
 
 Third Length - 
 
 Bottom: 49.667 x 10 x 1
-Middle: 5 offset 46.333 x 5 x 1
+Middle: 5 offset 41.333 x 5 x 1
 Top: 55 x 10 x ?
 
 Two Thirds Length - 
 
 Bottom: 99.333 x 10 x 1
-Middle: 5 offset 92.667 x 5 x 1
+Middle: 5 offset 87.667 x 5 x 1
 Top: 110 x 10 x ?
 
 Quarter Length - 
 
 Bottom: 37.25 x 10 x 1
-Middle: 5 offset 34.75 x 5 x 1
+Middle: 5 offset 29.75 x 5 x 1
 Top: 41.25 x 10 x ?
 
 Three Quarters Length - 
 
 Bottom: 111.75 x 10 x 1
-Middle: 5 offset 104.25 x 5 x 1
+Middle: 5 offset 99.25 x 5 x 1
 Top: 123.75 x 10 x ?
 Combinations:
 1 Full
