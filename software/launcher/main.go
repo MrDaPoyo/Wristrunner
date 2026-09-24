@@ -59,7 +59,7 @@ func main() {
 					layout.Flexed(0.4, func(gtx C) D {
 						return shell.Layout(gtx, th)
 					}),
-					layout.Flexed(0.6, func(gtx C) D { return alertWidgets(gtx, th.Theme) }),
+					// layout.Flexed(0.6, func(gtx C) D { return alertWidgets(gtx, th.Theme) }),
 					layout.Rigid(func(gtx C) D { return footer(gtx, th.Theme, shell) }),
 				)
 
