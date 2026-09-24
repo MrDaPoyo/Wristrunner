@@ -23,7 +23,7 @@ name: Test
 version: 1.0.1
 ```
 
-Apps should also be included in `launcher/registry.go`
+Apps should also be included in `launcher/registry.go`. Name it the same as what you've put in your `manifest.wr`
 
 ## Layout
 ```
