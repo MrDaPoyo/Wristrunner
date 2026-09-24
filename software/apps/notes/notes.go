@@ -43,7 +43,7 @@ type App struct {
 }
 
 func New() uikit.App {
-	a := &App{}
+	a := &App{list: layout.List{Axis: layout.Vertical}}
 	a.title.SingleLine = true // dont wrap
 
 	dir, err := lib.DataDir("notes")

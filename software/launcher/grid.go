@@ -51,10 +51,7 @@ func (g *AppGrid) Layout(gtx C, th *material.Theme) D {
 		if cellMin <= 0 {
 			cellMin = 150 // width
 		}
-		cols = gtx.Constraints.Max.X / gtx.Dp(cellMin)
-		if cols < 1 {
-			cols = 1
-		}
+		cols = max(gtx.Constraints.Max.X/gtx.Dp(cellMin), 1)
 	}
 
 	margins := layout.UniformInset(unit.Dp(5))

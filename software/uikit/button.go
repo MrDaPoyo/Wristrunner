@@ -42,7 +42,7 @@ func (b *Button) Layout(gtx layout.Context, th *material.Theme) layout.Dimension
 
 				if b.Clickable.Clicked(gtx) {
 					b.Action()
-					fmt.Println("lol")
+					fmt.Println("lol") // doesnt work
 				}
 
 				defer r.Push(gtx.Ops).Pop()
