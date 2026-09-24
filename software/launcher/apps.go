@@ -43,7 +43,7 @@ func LoadApps() ([]App, error) {
 
 				var app App
 				assignMatchingFields(&app, values)
-				fmt.Println(app)
+				fmt.Printf("Loaded '%s' app.\n", app.Name)
 				appList = append(appList, app)
 			} else {
 				fmt.Println(err)
