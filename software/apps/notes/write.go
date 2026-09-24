@@ -32,7 +32,9 @@ func (a *App) layoutEdit(gtx layout.Context, th *uikit.Theme) layout.Dimensions 
 		}),
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			return inset.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-				return material.Editor(th.Theme, &a.title, "Title").Layout(gtx)
+				theme := *th.Theme
+				theme.TextSize = 20
+				return material.Editor(&theme, &a.title, "Title").Layout(gtx)
 			})
 		}),
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {

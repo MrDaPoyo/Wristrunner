@@ -21,6 +21,7 @@ func (a *App) layoutList(gtx layout.Context, th *uikit.Theme) layout.Dimensions 
 			return a.layoutEdit(gtx, th)
 		}
 	}
+
 	if a.addBtn.Clicked(gtx) {
 		a.newNote()
 		return a.layoutEdit(gtx, th)
