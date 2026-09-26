@@ -1,4 +1,0 @@
-# script file start
-echo "this is usb update script!"
-
-% script file end
