@@ -1,0 +1,18 @@
+# Virtual Machine Disks
+*.qcow2
+*.img
+
+# Large Kernel & Bootloader Source Trees (Keep configs in /configs instead)
+kernel-qemu-src/
+rk3576-kernel/
+rk3576-uboot/
+
+# Temporary / Build Artifacts
+*.o
+*.cmd
+*.tmp
+.history
+.ssh/
+
+# Ignore local developer overlay disks
+local-dev.qcow2

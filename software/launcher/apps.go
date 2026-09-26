@@ -10,7 +10,7 @@ import (
 )
 
 const MANIFEST_NAME = "manifest.wr" // .wr is such a fire extension
-const APP_DIR = "../apps"
+const APP_DIR = "/usr/local/share/wristrunner/apps"
 
 type App struct {
 	Name   string // name displayed on the grid.
